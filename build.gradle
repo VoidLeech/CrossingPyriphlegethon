@@ -1,0 +1,227 @@
+plugins {
+    id 'fabric-loom' version '1.9-SNAPSHOT' apply(false)
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)' apply(false)
+    id 'org.spongepowered.gradle.vanilla' version '0.2.1-SNAPSHOT' apply(false)
+    id("org.spongepowered.mixin") version "0.7-SNAPSHOT" apply(false)
+    id "me.modmuss50.mod-publish-plugin" version "0.8.4"
+}
+
+subprojects {
+    apply plugin: 'java'
+
+    java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+    java.withSourcesJar()
+    java.withJavadocJar()
+        
+    jar {
+        from(rootProject.file("LICENSE"))
+        from(rootProject.file("RESTRICTED-CONTENT"))
+        from(rootProject.file("README.md"))
+        from(rootProject.fileTree("other-licenses/")) {
+            rename { "other-licenses/${it}"}
+        }
+
+        manifest {
+            attributes([
+                'Specification-Title'     : mod_name,
+                'Specification-Vendor'    : mod_author,
+                'Specification-Version'   : project.jar.archiveVersion,
+                'Implementation-Title'    : project.name,
+                'Implementation-Version'  : project.jar.archiveVersion,
+                'Implementation-Vendor'   : mod_author,
+                'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                'Timestamp'               : System.currentTimeMillis(),
+                'Built-On-Java'           : "${System.getProperty('java.vm.version')} (${System.getProperty('java.vm.vendor')})",
+                'Built-On-Minecraft'      : minecraft_version
+            ])
+        }
+    }
+
+    sourcesJar {
+        from(rootProject.file("LICENSE"))
+        from(rootProject.file("RESTRICTED-CONTENT"))
+        from(rootProject.file("README.md"))
+        from(rootProject.fileTree("other-licenses/")) {
+            rename { "other-licenses/${it}"}
+        }
+    }
+
+    javadocJar {
+        from(rootProject.file("LICENSE"))
+        from(rootProject.file("RESTRICTED-CONTENT"))
+        from(rootProject.file("README.md"))
+        from(rootProject.fileTree("other-licenses/")) {
+            rename { "other-licenses/${it}"}
+        }
+    }
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven {
+            name = "Cursemaven (CurseForge)"
+            url = "https://cursemaven.com"
+        }
+        maven {
+            name = "Modrinth"
+            url = "https://api.modrinth.com/maven"
+        }
+        maven {
+            name = 'Sponge / Mixin'
+            url = 'https://repo.spongepowered.org/repository/maven-public/'
+        }
+        maven {
+            name = 'BlameJared Maven (JEI / CraftTweaker / Bookshelf)'
+            url = 'https://maven.blamejared.com'
+        }
+        maven {
+            name = "Fuzs Mod Resources (Forge Config API Port)"
+            url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/"
+        }
+        ivy {
+            name "Oblivion Releases"
+            url 'https://github.com/'
+            patternLayout {
+                artifact "/[organisation]/[module]/releases/download/${minecraft_version}-${oblivion_version}/[revision].jar"
+            }
+            metadataSources { artifact() }
+        }
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        it.options.encoding = 'UTF-8'
+        it.options.getRelease().set(17)
+    }
+
+    processResources {
+        def expandProps = [
+                "version": version,
+                "group": project.group, //Else we target the task's group.
+                "minecraft_version": minecraft_version,
+                "forge_version": forge_version,
+                "forge_loader_version_range": forge_loader_version_range,
+                "forge_version_range": forge_version_range,
+                "minecraft_version_range": minecraft_version_range,
+                "fabric_version": fabric_version,
+                "fabric_loader_version": fabric_loader_version,
+                "mod_name": mod_name,
+                "mod_author": mod_author,
+                "mod_id": mod_id,
+                "license": license,
+                "description": project.description,
+                "homepage": homepage,
+                "mixinextras_version": mixinextras_version,
+                "oblivion_version": oblivion_version
+        ]
+
+        filesMatching(['pack.mcmeta', 'fabric.mod.json', 'META-INF/mods.toml', '*.mixins.json']) {
+            expand expandProps
+        }
+        inputs.properties(expandProps)
+    }
+}
+
+publishMods {
+    changelog = rootProject.file("NEXT.md").text
+    type = STABLE
+    version = rootProject.version
+    dryRun = true // set to false when publishing
+
+    File common        = file("common/build/libs/${mod_id}-common-${minecraft_version}-${rootProject.version}.jar")
+    File commonsources = file("common/build/libs/${mod_id}-common-${minecraft_version}-${rootProject.version}-sources.jar")
+    File commonjavadoc = file("common/build/libs/${mod_id}-common-${minecraft_version}-${rootProject.version}-javadoc.jar")
+    File forgeall      = file("forge/build/libs/${mod_id}-forge-${minecraft_version}-${rootProject.version}-all.jar")
+    File forgeslim     = file("forge/build/libs/${mod_id}-forge-${minecraft_version}-${rootProject.version}.jar")
+    File forgesources  = file("forge/build/libs/${mod_id}-forge-${minecraft_version}-${rootProject.version}-sources.jar")
+    File forgejavadoc  = file("forge/build/libs/${mod_id}-forge-${minecraft_version}-${rootProject.version}-javadoc.jar")
+    File fabric        = file("fabric/build/libs/${mod_id}-fabric-${minecraft_version}-${rootProject.version}.jar")
+    File fabricsources = file("fabric/build/libs/${mod_id}-fabric-${minecraft_version}-${rootProject.version}-sources.jar")
+    File fabricjavadoc = file("fabric/build/libs/${mod_id}-fabric-${minecraft_version}-${rootProject.version}-javadoc.jar")
+
+    github {
+        accessToken = providers.environmentVariable("GITHUB_TOKEN")
+        repository = "VoidLeech/Oblivion"
+        commitish = "${minecraft_version}/dev"
+        tagName = "${minecraft_version}-${rootProject.version}"
+
+        file = forgeall
+        additionalFiles.from(
+                common,
+                commonsources,
+                commonjavadoc,
+                forgeslim,
+                forgesources,
+                forgejavadoc,
+                fabric,
+                fabricsources,
+                fabricjavadoc)
+    }
+
+    // CurseForge options used by both Fabric and Forge
+    def cfOptions = curseforgeOptions {
+        accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
+        projectId = "UNPUBLISHED"
+        minecraftVersions.add("1.20.1")
+        javaVersions.add(JavaVersion.VERSION_17)
+        clientRequired = true
+        serverRequired = true
+        changelogType = "markdown"
+    }
+
+    // Modrinth options used by both Fabric and Forge
+    def mrOptions = modrinthOptions {
+        accessToken = providers.environmentVariable("MODRINTH_TOKEN")
+        projectId = "UNPUBLISHED"
+        minecraftVersions.add("1.20.1")
+    }
+
+    // Fabric specific options for CurseForge
+    curseforge("curseforgeFabric") {
+        from cfOptions
+        displayName = file.map { it.asFile.name }
+        file = fabric
+        modLoaders.add("fabric")
+        additionalFile(fabricsources) {
+            name = "${mod_id}-fabric-${minecraft_version}-${rootProject.version}-sources.jar"
+        }
+        additionalFile(fabricjavadoc) {
+            name = "${mod_id}-fabric-${minecraft_version}-${rootProject.version}-javadoc.jar"
+        }
+    }
+
+    // Forge specific options for CurseForge
+    curseforge("curseforgeForge") {
+        from cfOptions
+        displayName = file.map { it.asFile.name }
+        file = forgeall
+        modLoaders.add("forge")
+        modLoaders.add("neoforge")
+        additionalFile(forgesources) {
+            name = "${mod_id}-forge-${minecraft_version}-${rootProject.version}-sources.jar"
+        }
+        additionalFile(forgejavadoc) {
+            name = "${mod_id}-forge-${minecraft_version}-${rootProject.version}-javadoc.jar"
+        }
+    }
+
+    // Fabric specific options for Modrinth
+    modrinth("modrinthFabric") {
+        from mrOptions
+        file = fabric
+        modLoaders.add("fabric")
+        additionalFiles.from(
+                fabricsources,
+                fabricjavadoc)
+    }
+
+    // Forge specific options for Modrinth
+    modrinth("modrinthForge") {
+        from mrOptions
+        file = forgeall
+        modLoaders.add("forge")
+        modLoaders.add("neoforge")
+        additionalFiles.from(
+                forgesources,
+                forgejavadoc)
+    }
+}

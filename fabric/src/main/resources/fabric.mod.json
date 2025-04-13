@@ -1,0 +1,45 @@
+{
+    "schemaVersion": 1,
+    "id": "mod_id",
+    "version": "${version}",
+    "name": "${mod_name}",
+    "description": "${description}",
+    "authors": [
+        "${mod_author}"
+    ],
+    "contact": {
+        "homepage": "${homepage}",
+        "issues": "${homepage}/issues"
+    },
+    "license": "${license}",
+    "icon": "icon.png",
+    "environment": "*",
+    "entrypoints": {
+        "main": [
+            "com.github.voidleech.template_mod.TemplateModFabric"
+        ],
+        "client": [
+            "com.github.voidleech.template_mod.TemplateModFabricClient"
+        ]
+    },
+    "mixins": [
+        "${mod_id}.mixins.json",
+        "${mod_id}.fabric.mixins.json"
+    ],
+    "depends": {
+        "fabricloader": ">=0.14",
+        "fabric": "*",
+        "minecraft": "${minecraft_version}",
+        "java": ">=17",
+        "oblivion_api": ">=${oblivion_version}"
+    },
+    "suggests": {
+        "another-mod": "*"
+    },
+    "custom": {
+        "modmenu": {
+            "badges": [ "library", "remove this if content" ]
+        }
+    }
+}
+  
