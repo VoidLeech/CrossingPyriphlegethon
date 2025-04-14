@@ -1,6 +1,6 @@
 {
     "schemaVersion": 1,
-    "id": "mod_id",
+    "id": "crossing_pyriphlegethon",
     "version": "${version}",
     "name": "${mod_name}",
     "description": "${description}",
@@ -16,10 +16,10 @@
     "environment": "*",
     "entrypoints": {
         "main": [
-            "com.github.voidleech.template_mod.TemplateModFabric"
+            "com.github.voidleech.crossing_pyriphlegethon.CrossingPyriphlegethonFabric"
         ],
         "client": [
-            "com.github.voidleech.template_mod.TemplateModFabricClient"
+            "com.github.voidleech.crossing_pyriphlegethon.CrossingPyriphlegethonFabricClient"
         ]
     },
     "mixins": [

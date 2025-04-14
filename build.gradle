@@ -140,7 +140,7 @@ publishMods {
 
     github {
         accessToken = providers.environmentVariable("GITHUB_TOKEN")
-        repository = "VoidLeech/Oblivion"
+        repository = "VoidLeech/CrossingPyriphlegethon"
         commitish = "${minecraft_version}/dev"
         tagName = "${minecraft_version}-${rootProject.version}"
 

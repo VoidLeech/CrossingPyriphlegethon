@@ -83,7 +83,7 @@ dependencies {
     }
 
     if (oblivion_snapshot.toBoolean()) {
-        compileOnly("com.github.voidleech.oblivion:oblivion_api-forge-${minecraft_version}:${oblivion_version}")
+        implementation fg.deobf("com.github.voidleech.oblivion:oblivion_api-forge-${minecraft_version}:${oblivion_version}")
     }
     else {
         implementation fg.deobf("VoidLeech:Oblivion:oblivion_api-forge-${minecraft_version}-${oblivion_version}")
