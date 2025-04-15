@@ -38,7 +38,7 @@
     },
     "custom": {
         "modmenu": {
-            "badges": [ "library", "remove this if content" ]
+            "badges": [ ]
         }
     }
 }
