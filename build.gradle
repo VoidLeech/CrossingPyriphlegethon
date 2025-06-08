@@ -125,12 +125,11 @@ publishMods {
     changelog = rootProject.file("NEXT.md").text
     type = STABLE
     version = rootProject.version
-    dryRun = true // set to false when publishing
+    dryRun = true // set to false when publishing, PUSH & BUILD FIRST
 
     File common        = file("common/build/libs/${mod_id}-common-${minecraft_version}-${rootProject.version}.jar")
     File commonsources = file("common/build/libs/${mod_id}-common-${minecraft_version}-${rootProject.version}-sources.jar")
     File commonjavadoc = file("common/build/libs/${mod_id}-common-${minecraft_version}-${rootProject.version}-javadoc.jar")
-    File forgeall      = file("forge/build/libs/${mod_id}-forge-${minecraft_version}-${rootProject.version}-all.jar")
     File forgeslim     = file("forge/build/libs/${mod_id}-forge-${minecraft_version}-${rootProject.version}.jar")
     File forgesources  = file("forge/build/libs/${mod_id}-forge-${minecraft_version}-${rootProject.version}-sources.jar")
     File forgejavadoc  = file("forge/build/libs/${mod_id}-forge-${minecraft_version}-${rootProject.version}-javadoc.jar")
@@ -144,12 +143,11 @@ publishMods {
         commitish = "${minecraft_version}/dev"
         tagName = "${minecraft_version}-${rootProject.version}"
 
-        file = forgeall
+        file = forgeslim
         additionalFiles.from(
                 common,
                 commonsources,
                 commonjavadoc,
-                forgeslim,
                 forgesources,
                 forgejavadoc,
                 fabric,
@@ -160,7 +158,7 @@ publishMods {
     // CurseForge options used by both Fabric and Forge
     def cfOptions = curseforgeOptions {
         accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
-        projectId = "UNPUBLISHED"
+        projectId = "1282857"
         minecraftVersions.add("1.20.1")
         javaVersions.add(JavaVersion.VERSION_17)
         clientRequired = true
@@ -171,7 +169,7 @@ publishMods {
     // Modrinth options used by both Fabric and Forge
     def mrOptions = modrinthOptions {
         accessToken = providers.environmentVariable("MODRINTH_TOKEN")
-        projectId = "UNPUBLISHED"
+        projectId = "Yb0WKEno"
         minecraftVersions.add("1.20.1")
     }
 
@@ -193,7 +191,7 @@ publishMods {
     curseforge("curseforgeForge") {
         from cfOptions
         displayName = file.map { it.asFile.name }
-        file = forgeall
+        file = forgeslim
         modLoaders.add("forge")
         additionalFile(forgesources) {
             name = "${mod_id}-forge-${minecraft_version}-${rootProject.version}-sources.jar"
@@ -216,7 +214,7 @@ publishMods {
     // Forge specific options for Modrinth
     modrinth("modrinthForge") {
         from mrOptions
-        file = forgeall
+        file = forgeslim
         modLoaders.add("forge")
         additionalFiles.from(
                 forgesources,
