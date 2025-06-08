@@ -139,7 +139,7 @@ publishMods {
     File fabricjavadoc = file("fabric/build/libs/${mod_id}-fabric-${minecraft_version}-${rootProject.version}-javadoc.jar")
 
     github {
-        accessToken = providers.environmentVariable("GITHUB_TOKEN")
+        accessToken = providers.environmentVariable("GITHUB_PUBLISH")
         repository = "VoidLeech/CrossingPyriphlegethon"
         commitish = "${minecraft_version}/dev"
         tagName = "${minecraft_version}-${rootProject.version}"
@@ -195,7 +195,6 @@ publishMods {
         displayName = file.map { it.asFile.name }
         file = forgeall
         modLoaders.add("forge")
-        modLoaders.add("neoforge")
         additionalFile(forgesources) {
             name = "${mod_id}-forge-${minecraft_version}-${rootProject.version}-sources.jar"
         }
@@ -219,7 +218,6 @@ publishMods {
         from mrOptions
         file = forgeall
         modLoaders.add("forge")
-        modLoaders.add("neoforge")
         additionalFiles.from(
                 forgesources,
                 forgejavadoc)

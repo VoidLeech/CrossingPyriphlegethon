@@ -1,5 +1,6 @@
 package com.github.voidleech.crossing_pyriphlegethon;
 
+import com.github.voidleech.crossing_pyriphlegethon.init.PhlegethonCreativeModeTabs;
 import com.github.voidleech.crossing_pyriphlegethon.init.PhlegethonItems;
 import com.mojang.logging.LogUtils;
 import org.slf4j.Logger;
@@ -11,5 +12,6 @@ public class CrossingPyriphlegethon {
 
     public static void init() {
         PhlegethonItems.init();
+        PhlegethonCreativeModeTabs.init();
     }
 }
