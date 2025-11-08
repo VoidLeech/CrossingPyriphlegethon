@@ -179,6 +179,7 @@ publishMods {
         displayName = file.map { it.asFile.name }
         file = fabric
         modLoaders.add("fabric")
+        requires("oblivion-api")
         additionalFile(fabricsources) {
             name = "${mod_id}-fabric-${minecraft_version}-${rootProject.version}-sources.jar"
         }
@@ -193,6 +194,7 @@ publishMods {
         displayName = file.map { it.asFile.name }
         file = forgeslim
         modLoaders.add("forge")
+        requires("oblivion-api")
         additionalFile(forgesources) {
             name = "${mod_id}-forge-${minecraft_version}-${rootProject.version}-sources.jar"
         }
@@ -206,6 +208,7 @@ publishMods {
         from mrOptions
         file = fabric
         modLoaders.add("fabric")
+        requires("oblivion-api")
         additionalFiles.from(
                 fabricsources,
                 fabricjavadoc)
@@ -216,6 +219,7 @@ publishMods {
         from mrOptions
         file = forgeslim
         modLoaders.add("forge")
+        requires("oblivion-api")
         additionalFiles.from(
                 forgesources,
                 forgejavadoc)
